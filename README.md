@@ -36,9 +36,9 @@
 | ------ |:-------------:| ----------------------:|-----------------------------------------------------:|-------------------------:
 | 1      | 23520131      | Nguyễn Võ Ngọc Bảo     |[AdamNbz](https://github.com/AdamNbz)                 |23520131@gm.uit.edu.vn   |
 | 2      | 23521651      | Lê Phạm Minh Triết     |[...](https://github.com/...)                         |23521651@gm.uit.edu.vn   |
-| 3      | 2352....      | Đặng Hiếu Trung        |[...](https://github.com/...)                         |2352....@gm.uit.edu.vn   |
-| 4      | 2352....      | Phạm Hoàng Trọng       |[...](https://github.com/...)                         |2352....@gm.uit.edu.vn   |
-| 5      | 2352....      | Nguyễn Thành Nhân      |[...](https://github.com/...)                         |2352....@gm.uit.edu.vn   |
+| 3      | 23521672      | Đặng Hiếu Trung        |[...](https://github.com/...)                         |23521672@gm.uit.edu.vn   |
+| 4      | 23521665      | Phạm Hoàng Trọng       |[...](https://github.com/...)                         |23521665@gm.uit.edu.vn   |
+| 5      | 23521082      | Nguyễn Thành Nhân      |[...](https://github.com/...)                         |23521082@gm.uit.edu.vn   |
 | 6      | 23523127      | Nguyễn Phương Quyên    |[...](https://github.com/...)                         |23521327@gm.uit.edu.vn   |
 
 
