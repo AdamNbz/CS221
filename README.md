@@ -39,7 +39,7 @@
 | 3      | 23521672      | Đặng Hiếu Trung        |[...](https://github.com/...)                         |23521672@gm.uit.edu.vn   |
 | 4      | 23521665      | Phạm Hoàng Trọng       |[...](https://github.com/...)                         |23521665@gm.uit.edu.vn   |
 | 5      | 23521082      | Nguyễn Thành Nhân      |[...](https://github.com/...)                         |23521082@gm.uit.edu.vn   |
-| 6      | 23523127      | Nguyễn Phương Quyên    |[Quinniee](https://github.com/Quinniee)               |23521327@gm.uit.edu.vn   |
+| 6      | 23523127      | Nguyễn Phương Quyên    |[PhuongQuyen0908](https://github.com/PhuongQuyen0908) |23521327@gm.uit.edu.vn   |
 
 
 ## SEMINAR
