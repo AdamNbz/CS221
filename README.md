@@ -35,7 +35,7 @@
 | STT    | MSSV          | Họ và Tên              | Github                                               | Email                   |
 | ------ |:-------------:| ----------------------:|-----------------------------------------------------:|-------------------------:
 | 1      | 23520131      | Nguyễn Võ Ngọc Bảo     |[AdamNbz](https://github.com/AdamNbz)                 |23520131@gm.uit.edu.vn   |
-| 2      | 23521651      | Lê Phạm Minh Triết     |[MinhTriet](https://github.com/MinhTriet)             |23521651@gm.uit.edu.vn   |
+| 2      | 23521651      | Lê Phạm Minh Triết     |[conbobietbayy](https://github.com/conbobietbayy)     |23521651@gm.uit.edu.vn   |
 | 3      | 23521672      | Đặng Hiếu Trung        |[...](https://github.com/...)                         |23521672@gm.uit.edu.vn   |
 | 4      | 23521665      | Phạm Hoàng Trọng       |[...](https://github.com/...)                         |23521665@gm.uit.edu.vn   |
 | 5      | 23521082      | Nguyễn Thành Nhân      |[...](https://github.com/...)                         |23521082@gm.uit.edu.vn   |
