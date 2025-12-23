@@ -12,7 +12,7 @@
 | **Tác giả** | Hongjin Su, Weijia Shi, Jungo Kasai, Yizhong Wang, Yushi Hu, Mari Ostendorf, Wen-tau Yih, Noah A. Smith, Luke Zettlemoyer, Tao Yu |
 | **Tổ chức** | University of Washington, University of Hong Kong, Meta AI, Allen Institute for AI |
 | **Năm** | 2022 |
-| **Link** | [arXiv:2212.09741](https://arxiv.org/abs/2212.09741) |
+| **Link** | [ACL 2023 Findings](https://aclanthology.org/2023.findings-acl.71) |
 
 ---
 
@@ -83,19 +83,33 @@ git clone https://github.com/AdamNbz/CS221.git
 cd CS221/instructor-embedding
 ```
 
-### 2. Cài đặt dependencies
+### 2. Tạo môi trường ảo với Conda
+
+```bash
+# Tạo environment mới với Python 3.9
+conda create -n instructor python=3.9 -y
+
+# Kích hoạt environment
+conda activate instructor
+
+# (Tùy chọn) Cài đặt CUDA toolkit nếu dùng GPU
+conda install pytorch pytorch-cuda=11.8 -c pytorch -c nvidia -y
+```
+
+> 💡 **Tip**: Sử dụng Python 3.8-3.10 để đảm bảo tương thích với các dependencies.
+
+### 3. Cài đặt dependencies
 
 ```bash
 pip install -r requirements.txt
 pip install -e .
 ```
 
-### 3. Kiểm tra cài đặt
+### 4. Kiểm tra cài đặt
 
 ```python
 from InstructorEmbedding import INSTRUCTOR
 model = INSTRUCTOR('hkunlp/instructor-large')
-print("✅ Cài đặt thành công!")
 ```
 
 ---
