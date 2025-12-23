@@ -1,0 +1,58 @@
+# Large files - exceeds GitHub's 100MB limit
+input/medi-data.json
+input/models--sentence-transformers--gtr-t5-large/
+
+# Model files and checkpoints
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+
+# Large data files
+*.json.gz
+evaluation/prompt_retrieval/data/*.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Outputs
+output/
