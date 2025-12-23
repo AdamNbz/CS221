@@ -1,5 +1,9 @@
 # CS221 - Đồ án: INSTRUCTOR Embedding
 
+<p align="center">
+  <img src="instructor-embedding/instructor.png" alt="INSTRUCTOR Architecture" width="600"/>
+</p>
+
 ## 📚 Giới thiệu
 
 Đồ án này nghiên cứu và triển khai paper **"One Embedder, Any Task: Instruction-Finetuned Text Embeddings"** (INSTRUCTOR) - một mô hình text embedding có thể tạo ra embeddings tùy biến cho bất kỳ task nào chỉ bằng cách cung cấp instruction phù hợp.
@@ -12,7 +16,7 @@
 | **Tác giả** | Hongjin Su, Weijia Shi, Jungo Kasai, Yizhong Wang, Yushi Hu, Mari Ostendorf, Wen-tau Yih, Noah A. Smith, Luke Zettlemoyer, Tao Yu |
 | **Tổ chức** | University of Washington, University of Hong Kong, Meta AI, Allen Institute for AI |
 | **Năm** | 2022 |
-| **Link** | [ACL 2023 Findings](https://aclanthology.org/2023.findings-acl.71) |
+| **Link** | [arXiv](https://arxiv.org/abs/2212.09741) / [ACL 2023 Findings](https://aclanthology.org/2023.findings-acl.71) |
 
 ---
 
@@ -25,10 +29,9 @@
 Thay vì train nhiều mô hình cho từng task, INSTRUCTOR sử dụng **instructions** để hướng dẫn mô hình tạo embeddings phù hợp:
 
 ```python
-# Cùng một câu, khác instruction → embeddings khác nhau
-["Represent the sentence for sentiment classification:", "I love this movie!"]
-["Represent the sentence for topic classification:", "I love this movie!"]
-["Represent the question for retrieving answers:", "I love this movie!"]
+# Cùng một từ "Apple", instruction khác nhau → embeddings khác nhau!
+["Represent the technology company:", "Apple"]  # → gần với Microsoft, iPhone
+["Represent the fruit:", "Apple"]               # → gần với Orange, Banana
 ```
 
 ### Template Instruction
@@ -37,7 +40,7 @@ Thay vì train nhiều mô hình cho từng task, INSTRUCTOR sử dụng **instr
 Represent the [domain] [text_type] for [task_objective]:
 ```
 
-- **domain**: Lĩnh vực (science, finance, medicine, ...)
+- **domain**: Lĩnh vực (science, finance, technology, ...)
 - **text_type**: Loại văn bản (sentence, document, question, ...)
 - **task_objective**: Mục tiêu (classification, retrieval, clustering, ...)
 
@@ -47,29 +50,22 @@ Represent the [domain] [text_type] for [task_objective]:
 
 ```
 CS221/
-├── README.md                    # File này
-├── instructor-embedding/        # Source code chính
-│   ├── demo.ipynb              # 🎯 Notebook demo đầy đủ
+├── README.md                   # File này
+├── instructor-embedding/       # Source code chính
+│   ├── demo.ipynb              # Notebook demo chính
 │   ├── train.py                # Script huấn luyện
 │   ├── requirements.txt        # Dependencies
 │   ├── setup.py                # Package setup
+│   ├── instructor.png          # Hình minh họa kiến trúc
 │   │
 │   ├── InstructorEmbedding/    # Core module
 │   │   ├── __init__.py
 │   │   └── instructor.py       # INSTRUCTOR model class
 │   │
-│   ├── evaluation/             # Đánh giá mô hình
-│   │   ├── MTEB/              # Benchmark MTEB
-│   │   ├── prompt_retrieval/   # Prompt retrieval evaluation
-│   │   └── text_evaluation/    # Text evaluation metrics
-│   │
-│   ├── examples/               # Ví dụ sử dụng
-│   │   └── faiss/             # FAISS integration
-│   │
 │   ├── input/                  # Training data
-│   │   └── medi-data.json     # MEDI dataset
+│   │   └── medi-data.json      # MEDI dataset
 │   │
-│   └── output/                 # Model outputs
+│   └── output/                 # Model outputs (sau khi train)
 ```
 
 ---
@@ -175,18 +171,23 @@ print(f"Best match: Document {best_match}")
 
 ## 📊 Demo Notebook
 
-File `demo.ipynb` chứa các demo chi tiết:
+File `demo.ipynb` minh họa **sức mạnh của instruction** trong việc điều khiển embedding:
 
 | Demo | Mô tả |
 |------|-------|
-| 🎯 Sentiment Analysis | Minh họa instruction kéo câu cùng sentiment gần nhau |
-| 📊 Dot Product Analysis | Heatmap similarity matrix, phân tích định lượng |
-| 🔍 QA Retrieval | Instruction kéo Question-Answer gần nhau |
-| 📚 Domain Similarity | So sánh Science/Finance/Medical domains |
-| 🔎 Document Search | Information retrieval demo |
-| 🎯 Text Clustering | K-Means clustering với embeddings |
-| 📈 Evaluation | STS correlation, duplicate detection |
-| 🔬 Ablation Study | Ảnh hưởng của instruction khác nhau |
+| 🍎 **Disambiguation** | Cùng từ "Apple" với instruction khác nhau (tech vs fruit) → embedding khác nhau |
+| 📊 **Heatmap Visualization** | Trực quan hóa cosine similarity matrix |
+| 🎯 **Task-Specific Instructions** | Cùng text, instruction cho task khác nhau → embedding khác nhau |
+| 🔍 **Document Retrieval** | Query và Document với instruction phù hợp |
+| ⚠️ **Đúng vs Sai Instruction** | So sánh kết quả khi dùng đúng/sai instruction |
+| 📚 **Clustering** | Phân cụm văn bản theo chủ đề với instruction |
+| 📈 **t-SNE Visualization** | Trực quan hóa sự phân tách trong không gian embedding |
+
+### Ý nghĩa cốt lõi của INSTRUCTOR:
+
+1. **Disambiguation**: Cùng một từ/câu có thể có embedding KHÁC NHAU tùy theo instruction
+2. **Task-aware**: Instruction giúp model tạo embedding phù hợp với từng task cụ thể  
+3. **Flexibility**: Một model duy nhất phục vụ nhiều tasks khác nhau
 
 ---
 
@@ -194,17 +195,11 @@ File `demo.ipynb` chứa các demo chi tiết:
 
 INSTRUCTOR đạt **State-of-the-Art** trên 70+ embedding tasks:
 
-| Model | MTEB Avg. Score |
-|-------|-----------------|
-| instructor-base | 55.9 |
-| instructor-large | 58.4 |
-| **instructor-xl** | **58.8** |
-
-### Các benchmark được hỗ trợ:
-
-- **MTEB**: Massive Text Embedding Benchmark
-- **Billboard**: Text generation evaluation
-- **Prompt Retrieval**: In-context learning example selection
+| Model | MTEB Avg. Score | Parameters |
+|-------|-----------------|------------|
+| instructor-base | 55.9 | 110M |
+| instructor-large | 58.4 | 335M |
+| **instructor-xl** | **58.8** | 1.5B |
 
 ---
 
@@ -221,15 +216,23 @@ INSTRUCTOR đạt **State-of-the-Art** trên 70+ embedding tasks:
 ### Chạy huấn luyện
 
 ```bash
+cd instructor-embedding
+
 python train.py \
     --model_name_or_path sentence-transformers/gtr-t5-large \
     --output_dir ./output \
     --cache_dir ./input \
     --max_source_length 512 \
     --num_train_epochs 10 \
+    --save_steps 500 \
+    --cl_temperature 0.1 \
+    --warmup_ratio 0.1 \
     --learning_rate 2e-5 \
-    --cl_temperature 0.1
+    --overwrite_output_dir \
+    --max_examples {n}
 ```
+
+> 💡 **Lưu ý**: `--max_examples {n}` giới hạn số lượng training samples để giảm thời gian training, với n là số lượng samples.
 
 ---
 
@@ -265,11 +268,7 @@ python train.py \
 
 | | |
 |---|---|
-| **Môn học** | CS221 |
+| **Môn học** | CS221 - Xử lý ngôn ngữ tự nhiên |
 | **Repository** | [github.com/AdamNbz/CS221](https://github.com/AdamNbz/CS221) |
 
 ---
-
-<p align="center">
-  <b>🎓 CS221 - INSTRUCTOR Embedding Project</b>
-</p>
