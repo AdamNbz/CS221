@@ -26,12 +26,13 @@
 
 ### Giải pháp: Instruction-Finetuned Embeddings
 
-Thay vì train nhiều mô hình cho từng task, INSTRUCTOR sử dụng **instructions** để hướng dẫn mô hình tạo embeddings phù hợp:
+Thay vì train nhiều mô hình cho từng task, INSTRUCTOR sử dụng **instructions** để mô tả **mục đích của task** mà model cần thực hiện:
 
 ```python
-# Cùng một từ "Apple", instruction khác nhau → embeddings khác nhau!
-["Represent the technology company:", "Apple"]  # → gần với Microsoft, iPhone
-["Represent the fruit:", "Apple"]               # → gần với Orange, Banana
+# Instruction mô tả MỤC ĐÍCH TASK, không phải bổ sung ý nghĩa cho text
+["Represent the question for retrieving documents:", "What is machine learning?"]
+["Represent the document for retrieval:", "Machine learning is a subset of AI..."]
+["Represent the sentence for classification:", "This movie is great!"]
 ```
 
 ### Template Instruction
@@ -40,9 +41,11 @@ Thay vì train nhiều mô hình cho từng task, INSTRUCTOR sử dụng **instr
 Represent the [domain] [text_type] for [task_objective]:
 ```
 
-- **domain**: Lĩnh vực (science, finance, technology, ...)
-- **text_type**: Loại văn bản (sentence, document, question, ...)
-- **task_objective**: Mục tiêu (classification, retrieval, clustering, ...)
+- **text_type**: Loại văn bản (sentence, document, question, query...)
+- **task_objective**: Mục tiêu task (classification, retrieval, clustering...)
+- **domain** (tùy chọn): Lĩnh vực (science, finance, news...)
+
+> ⚠️ **Lưu ý quan trọng**: Instruction KHÔNG phải để bổ sung ngữ nghĩa cho text (ví dụ: "Apple là công ty" vs "Apple là trái cây"). Instruction là để **mô tả task** mà model cần thực hiện, giúp model biết cách tạo embedding phù hợp cho task đó.
 
 ---
 
@@ -171,23 +174,22 @@ print(f"Best match: Document {best_match}")
 
 ## 📊 Demo Notebook
 
-File `demo.ipynb` minh họa **sức mạnh của instruction** trong việc điều khiển embedding:
+File `demo.ipynb` minh họa **sức mạnh của instruction** trong việc mô tả task:
 
 | Demo | Mô tả |
 |------|-------|
-| 🍎 **Disambiguation** | Cùng từ "Apple" với instruction khác nhau (tech vs fruit) → embedding khác nhau |
-| 📊 **Heatmap Visualization** | Trực quan hóa cosine similarity matrix |
+| 🆚 **Có vs Không Instruction** | So sánh embedding khi có instruction vs không có instruction |
 | 🎯 **Task-Specific Instructions** | Cùng text, instruction cho task khác nhau → embedding khác nhau |
 | 🔍 **Document Retrieval** | Query và Document với instruction phù hợp |
-| ⚠️ **Đúng vs Sai Instruction** | So sánh kết quả khi dùng đúng/sai instruction |
+| ⚠️ **Đúng vs Sai Instruction** | So sánh kết quả khi dùng đúng/sai instruction cho task |
 | 📚 **Clustering** | Phân cụm văn bản theo chủ đề với instruction |
 | 📈 **t-SNE Visualization** | Trực quan hóa sự phân tách trong không gian embedding |
 
 ### Ý nghĩa cốt lõi của INSTRUCTOR:
 
-1. **Disambiguation**: Cùng một từ/câu có thể có embedding KHÁC NHAU tùy theo instruction
-2. **Task-aware**: Instruction giúp model tạo embedding phù hợp với từng task cụ thể  
-3. **Flexibility**: Một model duy nhất phục vụ nhiều tasks khác nhau
+1. **Task-aware**: Instruction mô tả mục đích task, giúp model tạo embedding phù hợp
+2. **Flexibility**: Một model duy nhất phục vụ nhiều tasks khác nhau (retrieval, classification, clustering...)
+3. **Performance**: Instruction giúp cải thiện đáng kể hiệu suất so với không dùng instruction
 
 ---
 
