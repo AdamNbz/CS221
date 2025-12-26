@@ -56,17 +56,23 @@ CS221/
 ├── README.md                   # File này
 ├── instructor-embedding/       # Source code chính
 │   ├── demo.ipynb              # Notebook demo chính
+│   ├── app.py                  # Flask web server
+│   ├── demo_data.json          # Preset demo data
 │   ├── train.py                # Script huấn luyện
 │   ├── requirements.txt        # Dependencies
+│   ├── requirements_web.txt    # Web app dependencies
 │   ├── setup.py                # Package setup
 │   ├── instructor.png          # Hình minh họa kiến trúc
+│   │
+│   ├── templates/              # Frontend templates
+│   │   └── index.html          # Web UI (Bootstrap + Chart.js)
 │   │
 │   ├── InstructorEmbedding/    # Core module
 │   │   ├── __init__.py
 │   │   └── instructor.py       # INSTRUCTOR model class
 │   │
 │   ├── input/                  # Training data
-│   │   └── medi-data.json      # MEDI dataset
+│   │   └── medi-data.json      # MEDI dataset (chỉ dùng để train)
 │   │
 │   └── output/                 # Model outputs (sau khi train)
 ```
@@ -191,6 +197,138 @@ File `demo.ipynb` minh họa **sức mạnh của instruction** trong việc mô
 2. **Flexibility**: Một model duy nhất phục vụ nhiều tasks khác nhau (retrieval, classification, clustering...)
 3. **Performance**: Instruction giúp cải thiện đáng kể hiệu suất so với không dùng instruction
 
+---
+
+## 🌐 Web Demo Application
+
+Ngoài notebook, dự án còn cung cấp **Web Demo** với giao diện trực quan để demo các tính năng của INSTRUCTOR.
+
+### 🚀 Quick Start
+
+```bash
+# Di chuyển vào thư mục
+cd instructor-embedding
+
+# Cài đặt dependencies
+pip install flask numpy torch scikit-learn sentence-transformers InstructorEmbedding
+
+# Chạy server
+python app.py
+
+# Mở trình duyệt tại http://localhost:5000
+```
+
+### ✨ Tính năng Demo
+
+| Tab | Mô tả | So sánh |
+|-----|-------|---------|
+| 🔍 **Document Retrieval** | Tìm kiếm document phù hợp với query | INSTRUCTOR (có instruction) vs GTR-T5 (không instruction) |
+| 🎯 **Task Embeddings** | Xem embedding thay đổi theo instruction | Cùng text, khác instruction → khác embedding |
+| 📊 **Clustering** | Phân cụm văn bản với t-SNE visualization | So sánh Silhouette Score giữa 2 model |
+| 📐 **Similarity Comparison** | So sánh độ tương đồng giữa các câu | Xem cosine similarity của cả 2 model |
+
+### 📦 Demo Data
+
+Ứng dụng sử dụng **demo_data.json** với toy data được tạo riêng cho demo (KHÔNG dùng medi-data.json - file đó chỉ để train model):
+- **5 demos** cho Document Retrieval (Science, Technology, History...)
+- **5 demos** cho Task Embeddings (Retrieval, Classification, Clustering...)
+- **4 demos** cho Clustering (News Topics, Sentiment, Academic, Mixed)
+- **6 demos** cho Triplet Evaluation (các loại semantic relationship)
+- **6 demos** cho Similarity Comparison (Synonyms, Antonyms, Paraphrase...)
+
+### 💡 Cách sử dụng
+
+1. **Chọn preset**: Mỗi tab có dropdown để chọn demo data có sẵn
+2. **Nhấn Load**: Tự động điền dữ liệu vào các input fields
+3. **Nhấn Run**: Chạy demo và xem kết quả so sánh
+4. **Thử nghiệm**: Có thể sửa input để thử các trường hợp khác
+
+### 🏗️ Kiến trúc
+
+```
+instructor-embedding/
+├── app.py              # Flask backend server
+├── demo_data.json      # Preset demo data
+├── requirements_web.txt # Web dependencies
+└── templates/
+    └── index.html      # Frontend UI (Bootstrap + Chart.js)
+```
+---
+
+## 🧪 Demo Evaluation (MTEB)
+
+Phần này hướng dẫn chạy **MTEB evaluation** để đo chất lượng embeddings (retrieval / STS / classification, ...).
+
+### 1) Cài đặt MTEB (trong repo)
+
+> Trước tiên hãy hoàn tất phần **Cài đặt** ở trên (`pip install -r requirements.txt` và `pip install -e .`).
+
+```bash
+# Từ thư mục instructor-embedding (root của project)
+cd evaluation/MTEB
+
+# Cài MTEB dạng editable (theo cấu trúc repo)
+pip install -e .
+
+# Các dependencies bổ sung cho MTEB
+pip install beir evaluate==0.2.0
+```
+
+### 2) Chạy evaluation
+
+#### Cú pháp cơ bản
+
+```bash
+cd evaluation/MTEB
+
+python examples/evaluate_model.py   --model_name <model_name_or_checkpoint>   --output_dir <output_directory>   --task_name <mteb_task_name>   --result_file <result_path_or_directory>
+```
+
+#### Tham số
+
+| Tham số | Bắt buộc | Mô tả | Mặc định |
+|---|---:|---|---|
+| `--model_name` | Có | Tên model HF hoặc đường dẫn checkpoint | `None` |
+| `--output_dir` | Có | Thư mục lưu kết quả chi tiết | `None` |
+| `--task_name` | Có | Tên task MTEB cần evaluate | `None` |
+| `--result_file` | Có | Nơi lưu kết quả tổng hợp (file/dir) | `None` |
+| `--cache_dir` | Không | Thư mục cache models/datasets | `None` |
+| `--split` | Không | Split của dataset (`test/dev/train`) | `test` |
+| `--batch_size` | Không | Batch size cho inference | `128` |
+| `--device` | Không | Device chạy (`cuda/cpu`) | `auto` |
+| `--prompt` | Không | Custom prompt instruction | `None` |
+
+### 3) Ví dụ nhanh (ArguAna)
+
+```bash
+cd evaluation/MTEB
+
+python examples/evaluate_model.py   --model_name hkunlp/instructor-large   --output_dir outputs/arguAna   --task_name ArguAna   --result_file results/arguAna
+```
+
+Kết quả thường nằm ở:
+- `outputs/arguAna/ArguAna.json`: kết quả chi tiết dạng JSON
+- `results/arguAna/`: thư mục kết quả tổng hợp
+
+### 4) Chạy nhiều tasks (tuần tự)
+
+```bash
+cd evaluation/MTEB
+
+python examples/evaluate_model.py   --model_name hkunlp/instructor-large   --output_dir outputs   --task_name ArguAna   --result_file results
+
+python examples/evaluate_model.py   --model_name hkunlp/instructor-large   --output_dir outputs   --task_name FiQA2018   --result_file results
+
+python examples/evaluate_model.py   --model_name hkunlp/instructor-large   --output_dir outputs   --task_name SICK-R   --result_file results
+```
+
+### 5) Evaluate checkpoint tự train
+
+```bash
+cd evaluation/MTEB
+
+python examples/evaluate_model.py   --model_name /path/to/your/checkpoint-1000   --output_dir outputs/my_model   --task_name ArguAna   --result_file results/my_model   --cache_dir /path/to/cache
+```
 ---
 
 ## 📈 Kết quả đánh giá

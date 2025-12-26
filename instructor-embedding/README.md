@@ -14,6 +14,7 @@ We introduce **Instructor**👨‍🏫, an instruction-finetuned text embedding 
 
 - [One Embedder, Any Task: Instruction-Finetuned Text Embeddings](#one-embedder-any-task-instruction-finetuned-text-embeddings)
   - [Quick Links](#quick-links)
+  - [Web Demo Application](#web-demo-application)
   - [Installation](#installation)
     - [Environment setup](#environment-setup)
   - [Getting Started](#getting-started)
@@ -35,6 +36,74 @@ We introduce **Instructor**👨‍🏫, an instruction-finetuned text embedding 
   - [Bugs or questions?](#bugs-or-questions)
   - [Citation](#citation)
   - [INSTRUCTOR Elsewhere](#instructor-elsewhere)
+
+---
+
+## Web Demo Application
+
+We provide an interactive web application to demonstrate the difference between **GTR-T5** (backbone, no instruction) and **INSTRUCTOR** (with instruction) embeddings.
+
+### 🚀 Quick Start
+
+1. **Install dependencies:**
+```bash
+pip install flask numpy torch scikit-learn sentence-transformers InstructorEmbedding
+```
+
+Or install from requirements file:
+```bash
+pip install -r requirements_web.txt
+```
+
+2. **Run the web server:**
+```bash
+cd instructor-embedding
+python app.py
+```
+
+3. **Open your browser:**
+Navigate to [http://localhost:5000](http://localhost:5000)
+
+### 🎯 Demo Features
+
+The web application includes 5 interactive demos:
+
+| Demo | Description |
+|------|-------------|
+| **📄 Document Retrieval** | Compare how GTR-T5 and INSTRUCTOR rank documents for a given query |
+| **🏷️ Task Embeddings** | See how the same text produces different embeddings with different instructions |
+| **📊 Clustering** | Compare clustering quality (Silhouette score) with t-SNE visualization |
+| **⚖️ Triplet Evaluation** | Test query-positive-negative discrimination ability |
+| **🔗 Similarity** | Calculate cosine similarity between two sentences |
+
+### 📁 Demo Data
+
+Pre-configured demo datasets are available in `demo_data.json`:
+- **5 Retrieval demos**: Neural Networks, NLP, Medical, Programming, Finance
+- **5 Task Embedding demos**: Various domain statements
+- **4 Clustering demos**: Sports/Tech/Food, Movies/Music/Books, Animals/Plants/Weather, Science/History/Geography
+- **6 Triplet demos**: Various question types
+- **6 Similarity demos**: High/Medium/Low similarity examples
+
+### 💡 Usage Tips
+
+1. **Load Models First**: Click "Load Models" button in the navbar (takes 1-2 minutes)
+2. **Use Presets**: Select from dropdown menus to load pre-configured demos
+3. **Custom Input**: Enter your own text to test with custom data
+4. **Compare Results**: View side-by-side comparison of GTR-T5 vs INSTRUCTOR
+
+### 📐 Architecture
+
+```
+instructor-embedding/
+├── app.py                 # Flask backend server
+├── demo_data.json         # Pre-configured demo datasets  
+├── requirements_web.txt   # Web app dependencies
+└── templates/
+    └── index.html         # Frontend UI (Bootstrap + Chart.js)
+```
+
+---
 
 ## Installation
 It is very easy to use INSTRUCTOR for any text embeddings. You can easily try it out in [Colab notebook](https://colab.research.google.com/drive/1P7ivNLMosHyG7XOHmoh7CoqpXryKy3Qt?usp=sharing). In your local machine, we recommend to first create a virtual environment:

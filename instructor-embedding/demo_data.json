@@ -1,0 +1,322 @@
+{
+    "retrieval_demos": [
+        {
+            "name": "Neural Networks & AI",
+            "query": "How do neural networks learn?",
+            "documents": [
+                "Python is a programming language known for its simple syntax.",
+                "Machine learning algorithms can learn patterns from data.",
+                "The Eiffel Tower is located in Paris, France.",
+                "Neural networks are inspired by the human brain.",
+                "Climate change is affecting global weather patterns.",
+                "Deep learning is a subset of machine learning using neural networks."
+            ],
+            "query_instruction": "Represent the question for retrieving supporting documents:",
+            "doc_instruction": "Represent the document for retrieval:",
+            "expected_top": "Neural networks are inspired by the human brain."
+        },
+        {
+            "name": "Natural Language Processing",
+            "query": "How do computers understand human language?",
+            "documents": [
+                "Python is a programming language known for its simple syntax.",
+                "Machine learning algorithms can learn patterns from data.",
+                "The Eiffel Tower is located in Paris, France.",
+                "Neural networks are inspired by the human brain.",
+                "Climate change is affecting global weather patterns.",
+                "Deep learning is a subset of machine learning.",
+                "The Great Wall of China is a famous landmark.",
+                "Natural language processing enables computers to understand text."
+            ],
+            "query_instruction": "Represent the question for retrieving supporting documents:",
+            "doc_instruction": "Represent the document for retrieval:",
+            "expected_top": "Natural language processing enables computers to understand text."
+        },
+        {
+            "name": "Medical/Health",
+            "query": "What are the symptoms of diabetes?",
+            "documents": [
+                "Diabetes is a chronic condition that affects blood sugar regulation.",
+                "The stock market experienced significant volatility last week.",
+                "Common symptoms include increased thirst, frequent urination, and fatigue.",
+                "Exercise and healthy diet are important for managing diabetes.",
+                "Paris is the capital city of France.",
+                "Insulin is a hormone produced by the pancreas."
+            ],
+            "query_instruction": "Represent the medical question for retrieving relevant information:",
+            "doc_instruction": "Represent the medical document for retrieval:",
+            "expected_top": "Common symptoms include increased thirst, frequent urination, and fatigue."
+        },
+        {
+            "name": "Programming/Tech",
+            "query": "How to sort a list in Python?",
+            "documents": [
+                "Python lists can be sorted using the sort() method or sorted() function.",
+                "JavaScript is a popular programming language for web development.",
+                "The sort() method modifies the list in-place while sorted() returns a new list.",
+                "Machine learning requires large datasets for training.",
+                "Python was created by Guido van Rossum.",
+                "Lists in Python are mutable data structures."
+            ],
+            "query_instruction": "Represent the programming question for retrieving code documentation:",
+            "doc_instruction": "Represent the technical document for retrieval:",
+            "expected_top": "Python lists can be sorted using the sort() method or sorted() function."
+        },
+        {
+            "name": "Finance",
+            "query": "What is compound interest?",
+            "documents": [
+                "Compound interest is interest calculated on the initial principal and accumulated interest.",
+                "The weather forecast predicts rain tomorrow.",
+                "Simple interest is calculated only on the principal amount.",
+                "Investing early allows more time for compound interest to grow your wealth.",
+                "Python is used in quantitative finance.",
+                "Banks offer different interest rates for savings accounts."
+            ],
+            "query_instruction": "Represent the finance question for retrieving explanations:",
+            "doc_instruction": "Represent the financial document for retrieval:",
+            "expected_top": "Compound interest is interest calculated on the initial principal and accumulated interest."
+        }
+    ],
+    
+    "task_embedding_demos": [
+        {
+            "name": "Machine Learning Statement",
+            "text": "Machine learning is transforming how we analyze data",
+            "description": "Một câu về machine learning - xem cách các instruction khác nhau tạo embedding khác nhau"
+        },
+        {
+            "name": "Scientific Discovery",
+            "text": "The discovery of antibiotics revolutionized modern medicine",
+            "description": "Câu về khoa học y học"
+        },
+        {
+            "name": "Climate Change",
+            "text": "Rising global temperatures are causing more extreme weather events",
+            "description": "Câu về biến đổi khí hậu"
+        },
+        {
+            "name": "Technology Impact",
+            "text": "Artificial intelligence is reshaping industries across the globe",
+            "description": "Câu về tác động của AI"
+        },
+        {
+            "name": "Business Statement",
+            "text": "The company reported strong quarterly earnings despite market challenges",
+            "description": "Câu về kinh doanh/tài chính"
+        }
+    ],
+    
+    "clustering_demos": [
+        {
+            "name": "Sports, Technology, Food (3 topics)",
+            "texts": [
+                "The football match ended with a dramatic goal in overtime.",
+                "Basketball players need excellent jumping abilities.",
+                "Tennis requires both physical and mental strength.",
+                "Artificial intelligence is transforming many industries.",
+                "Quantum computing promises unprecedented processing power.",
+                "Cybersecurity is essential in the digital age.",
+                "Italian pasta dishes are popular worldwide.",
+                "Sushi is a traditional Japanese cuisine.",
+                "French pastries are known for their delicate flavors."
+            ],
+            "labels": [0, 0, 0, 1, 1, 1, 2, 2, 2],
+            "label_names": ["Sports", "Technology", "Food"],
+            "n_clusters": 3,
+            "instruction": "Represent the news article for topic clustering:"
+        },
+        {
+            "name": "Movies, Music, Books (3 topics)",
+            "texts": [
+                "The new Marvel movie broke box office records worldwide.",
+                "Christopher Nolan is known for his complex narratives.",
+                "Animation films have become increasingly popular with adults.",
+                "Taylor Swift's latest album topped the charts for weeks.",
+                "Classical music concerts are experiencing a revival.",
+                "Hip hop has become the most popular music genre.",
+                "The Harry Potter series has sold millions of copies.",
+                "E-books are changing how people read literature.",
+                "Mystery novels continue to dominate bestseller lists."
+            ],
+            "labels": [0, 0, 0, 1, 1, 1, 2, 2, 2],
+            "label_names": ["Movies", "Music", "Books"],
+            "n_clusters": 3,
+            "instruction": "Represent the entertainment article for topic clustering:"
+        },
+        {
+            "name": "Animals, Plants, Weather (3 topics)",
+            "texts": [
+                "Lions are known as the kings of the African savanna.",
+                "Dolphins are highly intelligent marine mammals.",
+                "Eagles have exceptional eyesight for hunting prey.",
+                "Roses require careful pruning to bloom properly.",
+                "Oak trees can live for hundreds of years.",
+                "Bamboo is one of the fastest growing plants.",
+                "Hurricanes form over warm ocean waters.",
+                "Snowfall is expected in the northern regions.",
+                "Thunderstorms can produce dangerous lightning."
+            ],
+            "labels": [0, 0, 0, 1, 1, 1, 2, 2, 2],
+            "label_names": ["Animals", "Plants", "Weather"],
+            "n_clusters": 3,
+            "instruction": "Represent the nature article for topic clustering:"
+        },
+        {
+            "name": "Science, History, Geography (3 topics)",
+            "texts": [
+                "Einstein's theory of relativity changed physics forever.",
+                "DNA contains the genetic instructions for all living things.",
+                "Black holes are regions where gravity is extremely strong.",
+                "The Roman Empire lasted for over a thousand years.",
+                "World War II ended in 1945 with Allied victory.",
+                "The Renaissance was a period of cultural rebirth in Europe.",
+                "Mount Everest is the highest peak in the world.",
+                "The Amazon River is the largest river by water volume.",
+                "The Sahara Desert covers most of North Africa."
+            ],
+            "labels": [0, 0, 0, 1, 1, 1, 2, 2, 2],
+            "label_names": ["Science", "History", "Geography"],
+            "n_clusters": 3,
+            "instruction": "Represent the educational content for topic clustering:"
+        }
+    ],
+    
+    "triplet_demos": [
+        {
+            "name": "NLP Question",
+            "query": "How do computers understand human language?",
+            "positive": "Natural language processing enables computers to understand text.",
+            "negative": "The Great Wall of China is a famous landmark.",
+            "query_instruction": "Represent the question for retrieving supporting documents:",
+            "doc_instruction": "Represent the document for retrieval:"
+        },
+        {
+            "name": "Machine Learning",
+            "query": "What is supervised learning?",
+            "positive": "Supervised learning uses labeled data to train models to make predictions.",
+            "negative": "The Eiffel Tower was built in 1889 for the World's Fair.",
+            "query_instruction": "Represent the machine learning question for retrieving explanations:",
+            "doc_instruction": "Represent the educational document for retrieval:"
+        },
+        {
+            "name": "Medical Query",
+            "query": "What causes high blood pressure?",
+            "positive": "High blood pressure can be caused by obesity, stress, and high salt intake.",
+            "negative": "Python is a popular programming language for data science.",
+            "query_instruction": "Represent the medical question for retrieving health information:",
+            "doc_instruction": "Represent the medical document for retrieval:"
+        },
+        {
+            "name": "Cooking Question",
+            "query": "How to make pasta al dente?",
+            "positive": "Cook pasta until it is firm to the bite, usually 1-2 minutes less than package directions.",
+            "negative": "The stock market closed higher today after positive earnings reports.",
+            "query_instruction": "Represent the cooking question for retrieving recipes:",
+            "doc_instruction": "Represent the recipe document for retrieval:"
+        },
+        {
+            "name": "Science Question",
+            "query": "Why is the sky blue?",
+            "positive": "The sky appears blue because molecules in the atmosphere scatter shorter wavelengths of sunlight more than longer ones.",
+            "negative": "Shakespeare wrote many famous plays including Hamlet and Romeo and Juliet.",
+            "query_instruction": "Represent the science question for retrieving explanations:",
+            "doc_instruction": "Represent the scientific document for retrieval:"
+        },
+        {
+            "name": "History Question",
+            "query": "When did World War II end?",
+            "positive": "World War II ended in 1945 with the surrender of Germany in May and Japan in September.",
+            "negative": "Machine learning algorithms require large amounts of training data.",
+            "query_instruction": "Represent the history question for retrieving facts:",
+            "doc_instruction": "Represent the historical document for retrieval:"
+        }
+    ],
+    
+    "similarity_demos": [
+        {
+            "name": "Semantic Similarity - High",
+            "sentence1": "The cat is sleeping on the couch.",
+            "sentence2": "A feline is resting on the sofa.",
+            "instruction": "Represent the sentence for semantic similarity:",
+            "expected": "high"
+        },
+        {
+            "name": "Semantic Similarity - Medium",
+            "sentence1": "I love programming in Python.",
+            "sentence2": "Coding with JavaScript is enjoyable.",
+            "instruction": "Represent the sentence for semantic similarity:",
+            "expected": "medium"
+        },
+        {
+            "name": "Semantic Similarity - Low",
+            "sentence1": "The weather is sunny today.",
+            "sentence2": "Quantum physics is a complex field.",
+            "instruction": "Represent the sentence for semantic similarity:",
+            "expected": "low"
+        },
+        {
+            "name": "Scientific Comparison",
+            "sentence1": "Neural networks can learn complex patterns from data.",
+            "sentence2": "Deep learning models excel at pattern recognition tasks.",
+            "instruction": "Represent the scientific sentence for similarity:",
+            "expected": "high"
+        },
+        {
+            "name": "Business Comparison",
+            "sentence1": "The company's revenue increased by 20% this quarter.",
+            "sentence2": "Sales growth exceeded expectations in the recent period.",
+            "instruction": "Represent the business statement for similarity:",
+            "expected": "high"
+        },
+        {
+            "name": "Opposite Sentiments",
+            "sentence1": "The movie was absolutely fantastic and entertaining.",
+            "sentence2": "The film was terrible and a waste of time.",
+            "instruction": "Represent the review for sentiment similarity:",
+            "expected": "low"
+        }
+    ],
+    
+    "instructions_reference": {
+        "retrieval": {
+            "query": [
+                "Represent the question for retrieving supporting documents:",
+                "Represent the Wikipedia question for retrieving relevant documents:",
+                "Represent the query for retrieving similar passages:",
+                "Represent the search query for finding relevant documents:"
+            ],
+            "document": [
+                "Represent the document for retrieval:",
+                "Represent the Wikipedia document for retrieval:",
+                "Represent the passage for retrieval:",
+                "Represent the text for document retrieval:"
+            ]
+        },
+        "classification": [
+            "Represent the sentence for classification:",
+            "Represent the news article for topic classification:",
+            "Represent the review for sentiment classification:",
+            "Represent the email for spam classification:"
+        ],
+        "clustering": [
+            "Represent the sentence for clustering:",
+            "Represent the news article for topic clustering:",
+            "Represent the document for clustering by topic:",
+            "Represent the text for semantic clustering:"
+        ],
+        "similarity": [
+            "Represent the sentence for semantic similarity:",
+            "Represent the sentence for textual similarity:",
+            "Represent the statement for comparison:",
+            "Represent the text for similarity matching:"
+        ],
+        "domain_specific": {
+            "science": "Represent the Science sentence:",
+            "medicine": "Represent the Medicine sentence:",
+            "finance": "Represent the Financial statement:",
+            "legal": "Represent the Legal document:",
+            "technology": "Represent the Technology article:"
+        }
+    }
+}

@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INSTRUCTOR vs GTR-T5 Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --light-bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--light-bg) 0%, #e2e8f0 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(139, 92, 246, 0.08));
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            border: none;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color), #dc2626);
+            border: none;
+        }
+
+        .form-control, .form-select {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 8px;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background: #ffffff;
+            border-color: var(--primary-color);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .nav-pills .nav-link {
+            color: var(--text-secondary);
+            border-radius: 8px;
+            padding: 12px 20px;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-pills .nav-link.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .nav-pills .nav-link:hover:not(.active) {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary-color);
+        }
+
+        .result-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 10px 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .gtr-result {
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .instructor-result {
+            border-left: 4px solid var(--success-color);
+        }
+
+        .score-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .score-high { background: rgba(16, 185, 129, 0.15); color: #059669; }
+        .score-medium { background: rgba(251, 191, 36, 0.2); color: #d97706; }
+        .score-low { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--border-color);
+            border-left-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .status-loaded { background: var(--success-color); }
+        .status-not-loaded { background: var(--danger-color); }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+            color: var(--text-primary);
+        }
+
+        .comparison-table td, .comparison-table th {
+            border-color: var(--border-color);
+            vertical-align: middle;
+        }
+
+        .metric-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 12px;
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .hero-section {
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--text-primary), var(--primary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .textarea-large {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        #clusteringChart {
+            max-height: 400px;
+        }
+
+        .doc-item {
+            padding: 12px 15px;
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .doc-rank {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-right: 15px;
+        }
+
+        .rank-1 { background: #fbbf24; color: #000; }
+        .rank-2 { background: #94a3b8; color: #000; }
+        .rank-3 { background: #b45309; color: #fff; }
+        .rank-default { background: var(--border-color); color: var(--text-primary); }
+
+        .tab-content {
+            padding-top: 30px;
+        }
+
+        .instruction-tag {
+            display: inline-block;
+            background: rgba(99, 102, 241, 0.12);
+            color: var(--primary-color);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin: 2px;
+            font-weight: 500;
+        }
+
+        /* Table styling for light theme */
+        .table {
+            color: var(--text-primary);
+        }
+
+        .table-bordered {
+            border-color: var(--border-color);
+        }
+
+        /* Text colors for navbar */
+        .text-secondary {
+            color: var(--text-secondary) !important;
+        }
+
+        /* Loading text color */
+        #loadingText {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="text-center">
+            <div class="loading-spinner mb-3"></div>
+            <p id="loadingText">Đang xử lý...</p>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-brain me-2"></i>INSTRUCTOR Demo
+            </a>
+            <div class="d-flex align-items-center">
+                <span id="modelStatus" class="me-3">
+                    <span class="status-indicator status-not-loaded"></span>
+                    <span class="text-secondary">Models chưa load</span>
+                </span>
+                <button class="btn btn-primary btn-sm" id="loadModelsBtn" onclick="loadModels()">
+                    <i class="fas fa-download me-2"></i>Load Models
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">INSTRUCTOR vs GTR-T5</h1>
+            <p class="hero-subtitle">
+                So sánh hiệu quả embedding giữa <strong>GTR-T5</strong> (không instruction) 
+                và <strong>INSTRUCTOR</strong> (có instruction) trên các task NLP khác nhau.
+            </p>
+            <div class="row justify-content-center g-4 mt-4">
+                <div class="col-md-3">
+                    <div class="metric-card">
+                        <div class="feature-icon mx-auto" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h5>GTR-T5</h5>
+                        <p class="text-secondary small mb-0">Backbone model, encode text thuần</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric-card">
+                        <div class="feature-icon mx-auto" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h5>INSTRUCTOR</h5>
+                        <p class="text-secondary small mb-0">Task-aware với instruction</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container pb-5">
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-pills justify-content-center mb-4" id="demoTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#retrieval">
+                    <i class="fas fa-search me-2"></i>Document Retrieval
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#taskEmbed">
+                    <i class="fas fa-tags me-2"></i>Task Embeddings
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#clustering">
+                    <i class="fas fa-project-diagram me-2"></i>Clustering
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#similarity">
+                    <i class="fas fa-equals me-2"></i>Similarity
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Contents -->
+        <div class="tab-content">
+            <!-- Demo 1: Document Retrieval -->
+            <div class="tab-pane fade show active" id="retrieval">
+                <div class="row">
+                    <div class="col-lg-5">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-cog me-2"></i>Cấu hình Retrieval
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Chọn Demo Preset</label>
+                                    <select class="form-select" id="retrievalPresetSelect" onchange="applyRetrievalPreset()">
+                                        <option value="">-- Chọn một preset hoặc nhập tùy chỉnh --</option>
+                                    </select>
+                                </div>
+                                <hr>
+                                <div class="mb-3">
+                                    <label class="form-label">Query</label>
+                                    <input type="text" class="form-control" id="retrievalQuery" 
+                                           placeholder="Nhập câu hỏi của bạn...">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Documents (mỗi dòng 1 document)</label>
+                                    <textarea class="form-control textarea-large" id="retrievalDocs" 
+                                              placeholder="Nhập các documents, mỗi dòng 1 document..."></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Query Instruction</label>
+                                    <input type="text" class="form-control" id="queryInstruction" 
+                                           value="Represent the question for retrieving supporting documents:">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Document Instruction</label>
+                                    <input type="text" class="form-control" id="docInstruction" 
+                                           value="Represent the document for retrieval:">
+                                </div>
+                                <button class="btn btn-primary w-100" onclick="runRetrieval()">
+                                    <i class="fas fa-play me-2"></i>So sánh Retrieval
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-7">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-header text-danger">
+                                        <i class="fas fa-robot me-2"></i>GTR-T5 (No Instruction)
+                                    </div>
+                                    <div class="card-body" id="gtrResults">
+                                        <p class="text-secondary text-center">Chưa có kết quả</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-header text-success">
+                                        <i class="fas fa-graduation-cap me-2"></i>INSTRUCTOR (With Instruction)
+                                    </div>
+                                    <div class="card-body" id="instructorResults">
+                                        <p class="text-secondary text-center">Chưa có kết quả</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Demo 2: Task Embeddings -->
+            <div class="tab-pane fade" id="taskEmbed">
+                <div class="row">
+                    <div class="col-lg-5">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-tags me-2"></i>Task-Specific Instructions Demo
+                            </div>
+                            <div class="card-body">
+                                <p class="text-secondary small">
+                                    Cùng một text sẽ tạo ra các embeddings khác nhau khi sử dụng các instructions khác nhau.
+                                    GTR-T5 không có khả năng này - chỉ tạo một embedding duy nhất cho mỗi text.
+                                </p>
+                                <div class="mb-3">
+                                    <label class="form-label">Chọn Demo Preset</label>
+                                    <select class="form-select" id="taskEmbedPresetSelect" onchange="applyTaskEmbedPreset()">
+                                        <option value="">-- Chọn một preset hoặc nhập tùy chỉnh --</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Text</label>
+                                    <textarea class="form-control" id="taskText" rows="3"
+                                              placeholder="Nhập text để tạo embeddings..."></textarea>
+                                </div>
+                                <button class="btn btn-primary w-100" onclick="runTaskEmbeddings()">
+                                    <i class="fas fa-play me-2"></i>Phân tích Embeddings
+                                </button>
+                                <hr>
+                                <p class="small mb-2"><strong>Các Instructions sử dụng:</strong></p>
+                                <div>
+                                    <span class="instruction-tag">retrieval_query</span>
+                                    <span class="instruction-tag">retrieval_doc</span>
+                                    <span class="instruction-tag">classification</span>
+                                    <span class="instruction-tag">clustering</span>
+                                    <span class="instruction-tag">similarity</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-7">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-table me-2"></i>Similarity Matrix giữa các Task Embeddings
+                            </div>
+                            <div class="card-body" id="taskEmbedResults">
+                                <p class="text-secondary text-center">Nhập text và click "Phân tích" để xem kết quả</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Demo 3: Clustering -->
+            <div class="tab-pane fade" id="clustering">
+                <div class="row">
+                    <div class="col-lg-5">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-project-diagram me-2"></i>Clustering Demo
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Chọn Demo Preset</label>
+                                    <select class="form-select" id="clusteringPresetSelect" onchange="applyClusteringPreset()">
+                                        <option value="">-- Chọn một preset hoặc nhập tùy chỉnh --</option>
+                                    </select>
+                                </div>
+                                <hr>
+                                <div class="mb-3">
+                                    <label class="form-label">Texts (mỗi dòng 1 text)</label>
+                                    <textarea class="form-control textarea-large" id="clusterTexts" rows="6"
+                                              placeholder="Nhập các texts để clustering..."></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Số clusters</label>
+                                    <input type="number" class="form-control" id="nClusters" value="3" min="2" max="10">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Clustering Instruction</label>
+                                    <input type="text" class="form-control" id="clusterInstruction" 
+                                           value="Represent the text for topic clustering:">
+                                </div>
+                                <button class="btn btn-primary w-100" onclick="runClustering()">
+                                    <i class="fas fa-play me-2"></i>So sánh Clustering
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-7">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="metric-card">
+                                    <div class="metric-value" id="gtrSilhouette">-</div>
+                                    <div class="metric-label">GTR-T5 Silhouette</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="metric-card">
+                                    <div class="metric-value" id="instSilhouette">-</div>
+                                    <div class="metric-label">INSTRUCTOR Silhouette</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <i class="fas fa-chart-scatter me-2"></i>t-SNE Visualization
+                            </div>
+                            <div class="card-body">
+                                <canvas id="clusteringChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Demo 5: Similarity -->
+            <div class="tab-pane fade" id="similarity">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-equals me-2"></i>Sentence Similarity
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Chọn Demo Preset</label>
+                                    <select class="form-select" id="similarityPresetSelect" onchange="applySimilarityPreset()">
+                                        <option value="">-- Chọn một preset hoặc nhập tùy chỉnh --</option>
+                                    </select>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Sentence 1</label>
+                                        <textarea class="form-control" id="simSentence1" rows="3"
+                                                  placeholder="Nhập câu thứ nhất..."></textarea>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Sentence 2</label>
+                                        <textarea class="form-control" id="simSentence2" rows="3"
+                                                  placeholder="Nhập câu thứ hai..."></textarea>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Instruction</label>
+                                    <input type="text" class="form-control" id="simInstruction" 
+                                           value="Represent the sentence for semantic similarity:">
+                                </div>
+                                <button class="btn btn-primary w-100" onclick="runSimilarity()">
+                                    <i class="fas fa-play me-2"></i>Tính Similarity
+                                </button>
+                                <div id="similarityResults" class="mt-4">
+                                    <p class="text-secondary text-center">Nhập 2 câu để so sánh similarity</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-4 border-top" style="border-color: rgba(255,255,255,0.1) !important;">
+        <p class="text-secondary mb-0">
+            <i class="fas fa-graduation-cap me-2"></i>CS221 Project - INSTRUCTOR Embedding Demo
+        </p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Global data storage for presets
+        let retrievalPresets = [];
+        let taskEmbedPresets = [];
+        let clusteringPresets = [];
+        let similarityPresets = [];
+        let clusteringChart = null;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkModelStatus();
+            await loadAllPresets();
+        });
+
+        async function loadAllPresets() {
+            try {
+                // Load all presets in parallel
+                const [retrieval, taskEmbed, clustering, similarity] = await Promise.all([
+                    fetch('/api/preset/retrieval').then(r => r.json()),
+                    fetch('/api/preset/task_embeddings').then(r => r.json()),
+                    fetch('/api/preset/clustering').then(r => r.json()),
+                    fetch('/api/preset/similarity').then(r => r.json())
+                ]);
+
+                retrievalPresets = retrieval;
+                taskEmbedPresets = taskEmbed;
+                clusteringPresets = clustering;
+                similarityPresets = similarity;
+
+                // Populate select dropdowns
+                populateSelect('retrievalPresetSelect', retrievalPresets);
+                populateSelect('taskEmbedPresetSelect', taskEmbedPresets);
+                populateSelect('clusteringPresetSelect', clusteringPresets);
+                populateSelect('similarityPresetSelect', similarityPresets);
+
+                console.log('All presets loaded successfully');
+            } catch (e) {
+                console.error('Error loading presets:', e);
+            }
+        }
+
+        function populateSelect(selectId, presets) {
+            const select = document.getElementById(selectId);
+            if (!select) return;
+            
+            select.innerHTML = '<option value="">-- Chọn một preset hoặc nhập tùy chỉnh --</option>';
+            presets.forEach((preset, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = preset.name || `Demo ${index + 1}`;
+                select.appendChild(option);
+            });
+        }
+
+        // Apply preset functions
+        function applyRetrievalPreset() {
+            const select = document.getElementById('retrievalPresetSelect');
+            const index = parseInt(select.value);
+            if (isNaN(index)) return;
+            
+            const preset = retrievalPresets[index];
+            document.getElementById('retrievalQuery').value = preset.query;
+            document.getElementById('retrievalDocs').value = preset.documents.join('\n');
+            document.getElementById('queryInstruction').value = preset.query_instruction;
+            document.getElementById('docInstruction').value = preset.doc_instruction;
+        }
+
+        function applyTaskEmbedPreset() {
+            const select = document.getElementById('taskEmbedPresetSelect');
+            const index = parseInt(select.value);
+            if (isNaN(index)) return;
+            
+            const preset = taskEmbedPresets[index];
+            document.getElementById('taskText').value = preset.text;
+        }
+
+        function applyClusteringPreset() {
+            const select = document.getElementById('clusteringPresetSelect');
+            const index = parseInt(select.value);
+            if (isNaN(index)) return;
+            
+            const preset = clusteringPresets[index];
+            document.getElementById('clusterTexts').value = preset.texts.join('\n');
+            document.getElementById('nClusters').value = preset.n_clusters || 3;
+            document.getElementById('clusterInstruction').value = preset.instruction;
+        }
+
+        function applyTripletPreset() {
+            const select = document.getElementById('tripletPresetSelect');
+            const index = parseInt(select.value);
+            if (isNaN(index)) return;
+            
+            const preset = tripletPresets[index];
+            document.getElementById('tripletQuery').value = preset.query;
+            document.getElementById('tripletPositive').value = preset.positive;
+            document.getElementById('tripletNegative').value = preset.negative;
+        }
+
+        function applySimilarityPreset() {
+            const select = document.getElementById('similarityPresetSelect');
+            const index = parseInt(select.value);
+            if (isNaN(index)) return;
+            
+            const preset = similarityPresets[index];
+            document.getElementById('simSentence1').value = preset.sentence1;
+            document.getElementById('simSentence2').value = preset.sentence2;
+            document.getElementById('simInstruction').value = preset.instruction;
+        }
+
+        async function checkModelStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                updateModelStatus(data.models_loaded);
+            } catch (e) {
+                console.error('Error checking status:', e);
+            }
+        }
+
+        function updateModelStatus(loaded) {
+            const statusEl = document.getElementById('modelStatus');
+            const btnEl = document.getElementById('loadModelsBtn');
+            if (loaded) {
+                statusEl.innerHTML = `
+                    <span class="status-indicator status-loaded"></span>
+                    <span class="text-success">Models đã sẵn sàng</span>
+                `;
+                btnEl.style.display = 'none';
+            } else {
+                statusEl.innerHTML = `
+                    <span class="status-indicator status-not-loaded"></span>
+                    <span class="text-secondary">Models chưa load</span>
+                `;
+            }
+        }
+
+        async function loadModels() {
+            showLoading('Đang load models... (có thể mất 1-2 phút)');
+            try {
+                const response = await fetch('/api/load_models', { method: 'POST' });
+                const data = await response.json();
+                updateModelStatus(data.models_loaded);
+                if (!data.success) {
+                    alert('Lỗi khi load models!');
+                }
+            } catch (e) {
+                alert('Lỗi kết nối server!');
+            }
+            hideLoading();
+        }
+
+        function showLoading(text = 'Đang xử lý...') {
+            document.getElementById('loadingText').textContent = text;
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        // ==================== RETRIEVAL ====================
+        async function runRetrieval() {
+            const query = document.getElementById('retrievalQuery').value.trim();
+            const docsText = document.getElementById('retrievalDocs').value.trim();
+            const queryInst = document.getElementById('queryInstruction').value.trim();
+            const docInst = document.getElementById('docInstruction').value.trim();
+
+            if (!query || !docsText) {
+                alert('Vui lòng nhập query và documents!');
+                return;
+            }
+
+            const documents = docsText.split('\n').filter(d => d.trim());
+            showLoading('Đang encode và so sánh...');
+
+            try {
+                const response = await fetch('/api/retrieval', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        query, documents,
+                        query_instruction: queryInst,
+                        doc_instruction: docInst
+                    })
+                });
+                const data = await response.json();
+                
+                if (data.error) {
+                    alert(data.error);
+                    hideLoading();
+                    return;
+                }
+
+                displayRetrievalResults(data);
+            } catch (e) {
+                alert('Lỗi kết nối server!');
+            }
+            hideLoading();
+        }
+
+        function displayRetrievalResults(data) {
+            const gtrHtml = data.gtr_results.map((r, i) => `
+                <div class="doc-item">
+                    <div class="d-flex align-items-center">
+                        <div class="doc-rank ${i < 3 ? 'rank-' + (i+1) : 'rank-default'}">${i + 1}</div>
+                        <span class="small">${r.document.substring(0, 60)}...</span>
+                    </div>
+                    <span class="score-badge ${r.score > 0.7 ? 'score-high' : r.score > 0.4 ? 'score-medium' : 'score-low'}">
+                        ${r.score.toFixed(3)}
+                    </span>
+                </div>
+            `).join('');
+
+            const instHtml = data.instructor_results.map((r, i) => `
+                <div class="doc-item">
+                    <div class="d-flex align-items-center">
+                        <div class="doc-rank ${i < 3 ? 'rank-' + (i+1) : 'rank-default'}">${i + 1}</div>
+                        <span class="small">${r.document.substring(0, 60)}...</span>
+                    </div>
+                    <span class="score-badge ${r.score > 0.7 ? 'score-high' : r.score > 0.4 ? 'score-medium' : 'score-low'}">
+                        ${r.score.toFixed(3)}
+                    </span>
+                </div>
+            `).join('');
+
+            document.getElementById('gtrResults').innerHTML = gtrHtml;
+            document.getElementById('instructorResults').innerHTML = instHtml;
+        }
+
+        // ==================== TASK EMBEDDINGS ====================
+        async function runTaskEmbeddings() {
+            const text = document.getElementById('taskText').value.trim();
+            if (!text) {
+                alert('Vui lòng nhập text!');
+                return;
+            }
+
+            showLoading('Đang tạo embeddings cho các tasks...');
+
+            try {
+                const response = await fetch('/api/task_embeddings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text })
+                });
+                const data = await response.json();
+
+                if (data.error) {
+                    alert(data.error);
+                    hideLoading();
+                    return;
+                }
+
+                displayTaskEmbedResults(data);
+            } catch (e) {
+                alert('Lỗi kết nối server!');
+            }
+            hideLoading();
+        }
+
+        function displayTaskEmbedResults(data) {
+            let html = `
+                <p class="text-center mb-3"><strong>Text:</strong> "${data.text}"</p>
+                <div class="table-responsive">
+                    <table class="table table-dark comparison-table">
+                        <thead>
+                            <tr><th></th>${data.tasks.map(t => `<th class="text-center small">${t}</th>`).join('')}</tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            data.similarity_matrix.forEach((row, i) => {
+                html += `<tr><th class="small">${data.tasks[i]}</th>`;
+                row.forEach((val, j) => {
+                    const color = val > 0.95 ? 'score-high' : val > 0.85 ? 'score-medium' : 'score-low';
+                    html += `<td class="text-center"><span class="score-badge ${color}">${val.toFixed(3)}</span></td>`;
+                });
+                html += '</tr>';
+            });
+
+            html += `</tbody></table></div>
+                <p class="text-success text-center mt-3">
+                    <i class="fas fa-check-circle me-2"></i>
+                    Cùng text nhưng instruction khác → embedding khác!
+                </p>`;
+
+            document.getElementById('taskEmbedResults').innerHTML = html;
+        }
+
+        // ==================== CLUSTERING ====================
+        async function runClustering() {
+            const textsStr = document.getElementById('clusterTexts').value.trim();
+            const nClusters = parseInt(document.getElementById('nClusters').value);
+            const instruction = document.getElementById('clusterInstruction').value.trim();
+
+            const texts = textsStr.split('\n').filter(t => t.trim());
+            if (texts.length < 3) {
+                alert('Cần ít nhất 3 texts để clustering!');
+                return;
+            }
+
+            showLoading('Đang clustering...');
+
+            try {
+                const response = await fetch('/api/clustering', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ texts, n_clusters: nClusters, instruction })
+                });
+                const data = await response.json();
+
+                if (data.error) {
+                    alert(data.error);
+                    hideLoading();
+                    return;
+                }
+
+                displayClusteringResults(data, texts);
+            } catch (e) {
+                alert('Lỗi kết nối server!');
+            }
+            hideLoading();
+        }
+
+        function displayClusteringResults(data, texts) {
+            document.getElementById('gtrSilhouette').textContent = data.gtr.silhouette.toFixed(4);
+            document.getElementById('instSilhouette').textContent = data.instructor.silhouette.toFixed(4);
+
+            // Destroy previous chart
+            if (clusteringChart) {
+                clusteringChart.destroy();
+            }
+
+            const ctx = document.getElementById('clusteringChart').getContext('2d');
+            const colors = ['#ef4444', '#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899'];
+
+            // Prepare datasets
+            const gtrData = data.gtr.tsne_coords.map((coord, i) => ({
+                x: coord[0], y: coord[1], label: texts[i].substring(0, 20) + '...'
+            }));
+            const instData = data.instructor.tsne_coords.map((coord, i) => ({
+                x: coord[0], y: coord[1], label: texts[i].substring(0, 20) + '...'
+            }));
+
+            clusteringChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        ...Array.from(new Set(data.gtr.predictions)).map(cluster => ({
+                            label: `GTR Cluster ${cluster}`,
+                            data: gtrData.filter((_, i) => data.gtr.predictions[i] === cluster),
+                            backgroundColor: colors[cluster % colors.length] + '80',
+                            borderColor: colors[cluster % colors.length],
+                            pointStyle: 'circle',
+                            pointRadius: 8
+                        })),
+                        ...Array.from(new Set(data.instructor.predictions)).map(cluster => ({
+                            label: `INST Cluster ${cluster}`,
+                            data: instData.filter((_, i) => data.instructor.predictions[i] === cluster),
+                            backgroundColor: colors[cluster % colors.length] + '40',
+                            borderColor: colors[cluster % colors.length],
+                            pointStyle: 'rectRot',
+                            pointRadius: 10
+                        }))
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { labels: { color: '#94a3b8' } },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => ctx.raw.label
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#94a3b8' } },
+                        y: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#94a3b8' } }
+                    }
+                }
+            });
+        }
+
+        // ==================== TRIPLET ====================
+        async function runTriplet() {
+            const query = document.getElementById('tripletQuery').value.trim();
+            const positive = document.getElementById('tripletPositive').value.trim();
+            const negative = document.getElementById('tripletNegative').value.trim();
+
+            if (!query || !positive || !negative) {
+                alert('Vui lòng nhập đầy đủ query, positive và negative!');
+                return;
+            }
+
+            showLoading('Đang đánh giá triplet...');
+
+            try {
+                const response = await fetch('/api/triplet_eval', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query, positive, negative })
+                });
+                const data = await response.json();
+
+                if (data.error) {
+                    alert(data.error);
+                    hideLoading();
+                    return;
+                }
+
+                displayTripletResults(data);
+            } catch (e) {
+                alert('Lỗi kết nối server!');
+            }
+            hideLoading();
+        }
+
+        function displayTripletResults(data) {
+            const html = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="result-card gtr-result">
+                            <h5 class="text-danger"><i class="fas fa-robot me-2"></i>GTR-T5</h5>
+                            <p class="small mb-2">Similarity với Positive: <strong>${data.gtr.sim_positive.toFixed(4)}</strong></p>
+                            <p class="small mb-2">Similarity với Negative: <strong>${data.gtr.sim_negative.toFixed(4)}</strong></p>
+                            <p class="small mb-2">Margin: <strong>${data.gtr.margin.toFixed(4)}</strong></p>
+                            <p class="mb-0">
+                                ${data.gtr.correct 
+                                    ? '<span class="text-success"><i class="fas fa-check-circle me-2"></i>ĐÚNG</span>' 
+                                    : '<span class="text-danger"><i class="fas fa-times-circle me-2"></i>SAI</span>'}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="result-card instructor-result">
+                            <h5 class="text-success"><i class="fas fa-graduation-cap me-2"></i>INSTRUCTOR</h5>
+                            <p class="small mb-2">Similarity với Positive: <strong>${data.instructor.sim_positive.toFixed(4)}</strong></p>
+                            <p class="small mb-2">Similarity với Negative: <strong>${data.instructor.sim_negative.toFixed(4)}</strong></p>
+                            <p class="small mb-2">Margin: <strong>${data.instructor.margin.toFixed(4)}</strong></p>
+                            <p class="mb-0">
+                                ${data.instructor.correct 
+                                    ? '<span class="text-success"><i class="fas fa-check-circle me-2"></i>ĐÚNG</span>' 
+                                    : '<span class="text-danger"><i class="fas fa-times-circle me-2"></i>SAI</span>'}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-3">
+                    <span class="text-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Margin cao hơn = phân biệt tốt hơn giữa positive và negative
+                    </span>
+                </div>
+            `;
+            document.getElementById('tripletResults').innerHTML = html;
+        }
+
+        // ==================== SIMILARITY ====================
+        async function runSimilarity() {
+            const sentence1 = document.getElementById('simSentence1').value.trim();
+            const sentence2 = document.getElementById('simSentence2').value.trim();
+            const instruction = document.getElementById('simInstruction').value.trim();
+
+            if (!sentence1 || !sentence2) {
+                alert('Vui lòng nhập cả 2 câu!');
+                return;
+            }
+
+            showLoading('Đang tính similarity...');
+
+            try {
+                const response = await fetch('/api/compare_sentences', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sentence1, sentence2, instruction })
+                });
+                const data = await response.json();
+
+                if (data.error) {
+                    alert(data.error);
+                    hideLoading();
+                    return;
+                }
+
+                displaySimilarityResults(data);
+            } catch (e) {
+                alert('Lỗi kết nối server!');
+            }
+            hideLoading();
+        }
+
+        function displaySimilarityResults(data) {
+            const html = `
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="metric-card">
+                            <div class="metric-value text-danger">${data.gtr_similarity.toFixed(4)}</div>
+                            <div class="metric-label">GTR-T5</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="metric-card">
+                            <div class="metric-value text-success">${data.instructor_similarity.toFixed(4)}</div>
+                            <div class="metric-label">INSTRUCTOR</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="metric-card">
+                            <div class="metric-value ${data.difference > 0 ? 'text-success' : 'text-danger'}">
+                                ${data.difference > 0 ? '+' : ''}${data.difference.toFixed(4)}
+                            </div>
+                            <div class="metric-label">Δ (INST - GTR)</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('similarityResults').innerHTML = html;
+        }
+    </script>
+</body>
+</html>
