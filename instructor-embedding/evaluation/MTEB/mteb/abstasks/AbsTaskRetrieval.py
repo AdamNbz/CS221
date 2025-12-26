@@ -624,7 +624,7 @@ class AbsTaskRetrieval(AbsTask):
                 corpus_chunk_size=corpus_chunk_size,
                 **kwargs,
             )
-        except ImportError:
+        except (ImportError, TypeError):
             if target_devices is not None:
                 logger.warning(
                     "DenseRetrievalParallelExactSearch could not be imported from beir. Using DenseRetrievalExactSearch instead."
@@ -733,7 +733,7 @@ class DRESModel:
         instruction = DEFINITIONS[self.args.prompt][self.args.task_name]['corpus']
         for s in sentences:
             new_sentences.append([instruction, s])
-        return self.model.encode(new_sentences, batch_size=128, **kwargs)
+        return self.model.encode(new_sentences, batch_size=batch_size, **kwargs)
 
     def encode_corpus_parallel(
         self, corpus: List[Dict[str, str]], pool: Dict[str, object], batch_size: int, chunk_id: int, **kwargs
