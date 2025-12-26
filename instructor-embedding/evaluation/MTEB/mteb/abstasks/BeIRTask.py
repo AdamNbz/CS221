@@ -37,7 +37,18 @@ class BeIRTask(AbsTask):
             download_path = os.path.join(datasets.config.HF_DATASETS_CACHE, "BeIR")
             data_path = util.download_and_unzip(url, download_path)
             data_path = f"{data_path}/{sub_dataset}" if sub_dataset else data_path
-            self.corpus[split], self.queries[split], self.relevant_docs[split] = BeirDataLoader(
+            corpus, queries, relevant_docs = BeirDataLoader(
                 data_folder=data_path
             ).load(split=split)
+            
+            # Convert Dataset objects to dictionaries if needed for compatibility with BEIR
+            from datasets import Dataset
+            if isinstance(corpus, Dataset):
+                corpus = {item['id']: {k: v for k, v in item.items() if k != 'id'} for item in corpus}
+            if isinstance(queries, Dataset):
+                queries = {item['id']: item['text'] for item in queries}
+            
+            self.corpus[split] = corpus
+            self.queries[split] = queries
+            self.relevant_docs[split] = relevant_docs
         self.data_loaded = True
