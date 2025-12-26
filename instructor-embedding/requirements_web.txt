@@ -1,0 +1,9 @@
+# Requirements for INSTRUCTOR Demo Web Application
+
+flask>=2.3.0
+numpy>=1.21.0
+torch>=1.9.0
+scikit-learn>=1.0.0
+sentence-transformers>=2.2.0
+InstructorEmbedding>=1.0.0
+tqdm>=4.60.0
